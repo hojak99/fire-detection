@@ -1,14 +1,15 @@
 ﻿#include <opencv2\opencv.hpp>
+#include <vector>
 
 // 움직이는 픽셀 인식하는 메소드
 cv::Mat	pixelMotion();
 
 // 불 RGB 인식하는 메소드
-cv::Mat fireRGB();
+cv::Mat fireRGB(cv::Mat frame);
 
 int main()
 {
-	cv::VideoCapture video("test_fire_1.mp4");
+	cv::VideoCapture video("test_fire_2.mp4");
 
 	// 비디오의 FPS 를 가져온다.
 	int videoFPS = video.get(CV_CAP_PROP_FPS);
@@ -31,16 +32,18 @@ int main()
 
 		// 비디오 영상 프레임을 frame 변수에 받기
 		video >> originalFrame;
+		cv::cvtColor(originalFrame, originalFrame, CV_BGR2YCrCb);
 
 		// 주변 픽셀들의 값을 이용해 평균을 적용하여 잡음 제거함
 		cv::medianBlur(originalFrame, resultFrame, 3);
-
+		resultFrame = fireRGB(resultFrame);
+			
 		// 윈도우 창에 비디오 영상 프레임을 받는 변수를 이용해 출력
 		cv::imshow("OriginalVideo", originalFrame);
-		cv::imshow("ResultVideo", resultFrame);
+		cv::imshow("ResultVideo", resultFrame);	
 
 		// videoFPS 값마다 검사. "esc" 키를 눌렀을 시에 break
-		if (cv::waitKey(videoFPS) == 27) {
+		if (cv::waitKey(33) == 27) {
 			break;
 		}
 		
@@ -65,10 +68,21 @@ int main()
 */
 cv::Mat pixelMotion()
 {
-
+	return cv::Mat();
 }
 
-cv::Mat fireRGB()
+cv::Mat fireRGB(cv::Mat frame)
 {
+	std::vector<cv::Mat> channels;
 
+	// 채널 분리. BGR 순서대로 분리된다.
+	cv::split(frame, channels);
+	
+	double maxVal = 0;
+	double minVal = 0;
+
+	cv::minMaxLoc(channels[2], &maxVal, &minVal, 0, 0);
+
+	// R 채널 반환
+	return channels[2];
 }
