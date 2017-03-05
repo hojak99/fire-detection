@@ -2,4 +2,4 @@
 Fire detection using OpenCV
 
 
-![testImage](./fire-detection.jpg) 
+![testImage](./fire-detection.PNG) 
