@@ -10,6 +10,8 @@ cv::Mat fireRGB(cv::Mat frame);
 int main()
 {
 	cv::VideoCapture video("test_fire_2.mp4");
+	cv::Ptr<cv::BackgroundSubtractor> pMOG2;
+	pMOG2 = cv::createBackgroundSubtractorMOG2();
 
 	// 비디오의 FPS 를 가져온다.
 	int videoFPS = video.get(CV_CAP_PROP_FPS);
@@ -46,9 +48,9 @@ int main()
 
 		cvMaxS(redChannelImg, 150, redChannelImg);
 
-		// R 채널 반환
 		cv::Mat temp = cv::cvarrToMat(redChannelImg);
-			
+		pMOG2->apply(temp, temp);
+
 		// 윈도우 창에 비디오 영상 프레임을 받는 변수를 이용해 출력
 		cv::imshow("OriginalVideo", originalFrame);
 		cv::imshow("ResultVideo", temp);	
