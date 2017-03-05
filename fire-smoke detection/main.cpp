@@ -81,8 +81,12 @@ cv::Mat fireRGB(cv::Mat frame)
 	double maxVal = 0;
 	double minVal = 0;
 
-	cv::minMaxLoc(channels[2], &maxVal, &minVal, 0, 0);
+	IplImage *redChannelImg = new IplImage(channels[2]);
+
+	cvMaxS(redChannelImg, 150, redChannelImg);
 
 	// R 채널 반환
+	//channels[2] = cv::cvarrToMat(redChannelImg);
+	
 	return channels[2];
 }
