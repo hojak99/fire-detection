@@ -32,15 +32,26 @@ int main()
 
 		// 비디오 영상 프레임을 frame 변수에 받기
 		video >> originalFrame;
-		cv::cvtColor(originalFrame, originalFrame, CV_BGR2YCrCb);
-
+		
 		// 주변 픽셀들의 값을 이용해 평균을 적용하여 잡음 제거함
 		cv::medianBlur(originalFrame, resultFrame, 3);
-		resultFrame = fireRGB(resultFrame);
+
+		std::vector<cv::Mat> channels;
+
+		// 채널 분리. BGR 순서대로 분리된다.
+		cv::split(resultFrame, channels);
+
+		IplImage *redChannelImg;
+		redChannelImg = &IplImage(channels[2]);
+
+		cvMaxS(redChannelImg, 150, redChannelImg);
+
+		// R 채널 반환
+		cv::Mat temp = cv::cvarrToMat(redChannelImg);
 			
 		// 윈도우 창에 비디오 영상 프레임을 받는 변수를 이용해 출력
 		cv::imshow("OriginalVideo", originalFrame);
-		cv::imshow("ResultVideo", resultFrame);	
+		cv::imshow("ResultVideo", temp);	
 
 		// videoFPS 값마다 검사. "esc" 키를 눌렀을 시에 break
 		if (cv::waitKey(33) == 27) {
@@ -73,20 +84,5 @@ cv::Mat pixelMotion()
 
 cv::Mat fireRGB(cv::Mat frame)
 {
-	std::vector<cv::Mat> channels;
-
-	// 채널 분리. BGR 순서대로 분리된다.
-	cv::split(frame, channels);
-	
-	double maxVal = 0;
-	double minVal = 0;
-
-	IplImage *redChannelImg = new IplImage(channels[2]);
-
-	cvMaxS(redChannelImg, 150, redChannelImg);
-
-	// R 채널 반환
-	//channels[2] = cv::cvarrToMat(redChannelImg);
-	
-	return channels[2];
+	return cv::Mat();
 }
