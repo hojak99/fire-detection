@@ -13,9 +13,6 @@ int main()
 	cv::Ptr<cv::BackgroundSubtractor> pMOG2;
 	pMOG2 = cv::createBackgroundSubtractorMOG2();
 
-	// 비디오의 FPS 를 가져온다.
-	int videoFPS = video.get(CV_CAP_PROP_FPS);
-
 	// 비디오를 열지 못할 시에 "Can not open video" 출력
 	if (!video.isOpened()) {
 		std::cout << "Can not open video" << std::endl;
@@ -30,6 +27,8 @@ int main()
 	cv::namedWindow("OriginalVideo", cv::WINDOW_AUTOSIZE);
 	cv::namedWindow("ResultVideo", cv::WINDOW_AUTOSIZE);
 	
+	std::vector<cv::Mat> channels;
+
 	while (1) {
 
 		// 비디오 영상 프레임을 frame 변수에 받기
@@ -38,28 +37,30 @@ int main()
 		// 주변 픽셀들의 값을 이용해 평균을 적용하여 잡음 제거함
 		cv::medianBlur(originalFrame, resultFrame, 3);
 
-		std::vector<cv::Mat> channels;
-
 		// 채널 분리. BGR 순서대로 분리된다.
 		cv::split(resultFrame, channels);
 
 		IplImage *redChannelImg;
 		redChannelImg = &IplImage(channels[2]);
 
+		// redChannelmg 에서 픽셀 값이 150 이상인 것만 추출
 		cvMaxS(redChannelImg, 150, redChannelImg);
 
 		cv::Mat temp = cv::cvarrToMat(redChannelImg);
+
+		// 배경제거
 		pMOG2->apply(temp, temp);
+
+		channels.clear();
 
 		// 윈도우 창에 비디오 영상 프레임을 받는 변수를 이용해 출력
 		cv::imshow("OriginalVideo", originalFrame);
 		cv::imshow("ResultVideo", temp);	
 
-		// videoFPS 값마다 검사. "esc" 키를 눌렀을 시에 break
-		if (cv::waitKey(33) == 27) {
+		// 30 프레임마다 검사. "esc" 키를 눌렀을 시에 break
+		if (cv::waitKey(30) == 27) {
 			break;
 		}
-		
 	}
 
 	// 윈도우 창 모두 삭제
@@ -67,8 +68,10 @@ int main()
 	// Mat 형 변수 release;
 	originalFrame.release();
 	resultFrame.release();
+	pMOG2.release();
 
 	video.release();
+
 
 	return 0;
 }
