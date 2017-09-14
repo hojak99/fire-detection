@@ -81,7 +81,7 @@ int main()
 /*
 	움직이는 픽셀들 중 불에 대한 RGB 값들을 검사하여 불을 인식 시킨다.
 	추후에 연기 인식도 추가.
-*/
+
 cv::Mat pixelMotion()
 {
 	return cv::Mat();
@@ -91,3 +91,4 @@ cv::Mat fireRGB(cv::Mat frame)
 {
 	return cv::Mat();
 }
+*/
