@@ -2,10 +2,10 @@
 #include <vector>
 
 // 움직이는 픽셀 인식하는 메소드
-cv::Mat	pixelMotion();
+//cv::Mat	pixelMotion();
 
 // 불 RGB 인식하는 메소드
-cv::Mat fireRGB(cv::Mat frame);
+//cv::Mat fireRGB(cv::Mat frame);
 
 int main()
 {
